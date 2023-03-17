@@ -1,11 +1,11 @@
 package dto
 
-type userLoginDTO struct {
+type UserLoginDTO struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type userRegisterDTO struct {
+type UserRegisterDTO struct {
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
