@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"net/http"
-	"oprec/dompet-api/service"
-	"oprec/dompet-api/utils"
+	"dompet-api/service"
+	"dompet-api/utils"
 
 	"strings"
 
