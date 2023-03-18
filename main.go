@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
-	"oprec/dompet-api/config"
-	"oprec/dompet-api/controller"
-	"oprec/dompet-api/middleware"
-	"oprec/dompet-api/repository"
-	"oprec/dompet-api/routes"
-	"oprec/dompet-api/service"
+	"dompet-api/config"
+	"dompet-api/controller"
+	"dompet-api/middleware"
+	"dompet-api/repository"
+	"dompet-api/routes"
+	"dompet-api/service"
 	"os"
 
 	"github.com/gin-gonic/gin"
