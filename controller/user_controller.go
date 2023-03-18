@@ -2,9 +2,9 @@ package controller
 
 import (
 	"net/http"
-	"oprec/dompet-api/dto"
-	"oprec/dompet-api/service"
-	"oprec/dompet-api/utils"
+	"dompet-api/dto"
+	"dompet-api/service"
+	"dompet-api/utils"
 
 	"github.com/gin-gonic/gin"
 )
