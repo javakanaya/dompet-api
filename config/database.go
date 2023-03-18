@@ -1,8 +1,8 @@
 package config
 
 import (
-	"dompet-api/entity"
 	"fmt"
+	"dompet-api/entity"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -26,7 +26,6 @@ func SetupDatabaseConnection() *gorm.DB {
 	dbPort := os.Getenv("DB_PORT")
 
 	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v TimeZone=Asia/Jakarta", dbHost, dbUser, dbPass, dbName, dbPort)
-
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println(err)
@@ -35,6 +34,8 @@ func SetupDatabaseConnection() *gorm.DB {
 
 	if err := db.AutoMigrate(
 		entity.User{},
+		entity.Dompet{},
+		entity.CatatanKeuangan{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)
@@ -50,4 +51,5 @@ func CloseDatabaseConnection(db *gorm.DB) {
 		panic(err)
 	}
 	dbSQL.Close()
+
 }

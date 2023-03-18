@@ -1,22 +1,22 @@
 package controller
 
 import (
+	"net/http"
 	"dompet-api/dto"
 	"dompet-api/service"
 	"dompet-api/utils"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UserController interface {
-	RegisterUser(ctx *gin.Context)
-	LoginUser(ctx *gin.Context)
-}
-
 type userController struct {
 	userService service.UserService
 	jwtService  service.JWTService
+}
+
+type UserController interface {
+	RegisterUser(ctx *gin.Context)
+	LoginUser(ctx *gin.Context)
 }
 
 func NewUserController(us service.UserService, jwt service.JWTService) UserController {
@@ -74,7 +74,7 @@ func (uc *userController) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	token := uc.jwtService.GenerateToken(user.ID)
+	token := uc.jwtService.GenerateToken(user.ID, user.Name)
 	res := utils.BuildResponse("Successful login", http.StatusOK, token)
 	ctx.JSON(http.StatusOK, res)
 

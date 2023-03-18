@@ -1,15 +1,16 @@
 package middleware
 
 import (
+	"net/http"
 	"dompet-api/service"
 	"dompet-api/utils"
-	"net/http"
+
 	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
+func Authenticate() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -23,7 +24,10 @@ func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
 			return
 		}
 		authHeader = strings.Replace(authHeader, "Bearer ", "", -1)
-		token, err := jwtService.ValidateToken(authHeader)
+
+		tokenService := service.NewJWTService()
+
+		token, err := tokenService.ValidateToken(authHeader)
 		if err != nil {
 			response := utils.BuildErrorResponse("Invalid token", http.StatusUnauthorized)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
@@ -36,15 +40,6 @@ func Authenticate(jwtService service.JWTService) gin.HandlerFunc {
 			return
 		}
 
-		// get userID from token
-		userID, err := jwtService.GetUserIDByToken(authHeader)
-		if err != nil {
-			response := utils.BuildErrorResponse("Failed to process request", http.StatusUnauthorized)
-			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
-			return
-		}
-		c.Set("token", authHeader)
-		c.Set("userID", userID)
 		c.Next()
 	}
 }

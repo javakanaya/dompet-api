@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-
 	"dompet-api/dto"
 	"dompet-api/entity"
 	"dompet-api/repository"
@@ -11,15 +10,15 @@ import (
 	"github.com/mashingan/smapping"
 )
 
+type userService struct {
+	userRepository repository.UserRepository
+}
+
 type UserService interface {
 	CreateUser(ctx context.Context, userDTO dto.UserCreateDTO) (entity.User, error)
 	IsDuplicateEmail(ctx context.Context, email string) (bool, error)
 	VerifyCredential(ctx context.Context, email string, password string) (bool, error)
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
-}
-
-type userService struct {
-	userRepository repository.UserRepository
 }
 
 func NewUserService(ur repository.UserRepository) UserService {

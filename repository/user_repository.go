@@ -2,20 +2,20 @@ package repository
 
 import (
 	"context"
-
 	"dompet-api/entity"
 
 	"gorm.io/gorm"
 )
 
+type userConnection struct {
+	connection *gorm.DB
+}
+
 type UserRepository interface {
+	// functional
 	InsertUser(ctx context.Context, user entity.User) (entity.User, error)
 	GetUserByID(ctx context.Context, userID uint64) (entity.User, error)
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
-}
-
-type userConnection struct {
-	connection *gorm.DB
 }
 
 func NewUserRepository(db *gorm.DB) UserRepository {
