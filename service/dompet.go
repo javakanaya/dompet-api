@@ -1,8 +1,8 @@
 package service
 
 import (
-	"oprec/dompet-api/entity"
-	"oprec/dompet-api/repository"
+	"dompet-api/entity"
+	"dompet-api/repository"
 )
 
 type dompetService struct {
