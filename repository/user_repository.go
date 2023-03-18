@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"oprec/dompet-api/entity"
+	"dompet-api/entity"
 
 	"gorm.io/gorm"
 )
