@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"oprec/dompet-api/entity"
+	"dompet-api/entity"
 
 	"gorm.io/gorm"
 )
