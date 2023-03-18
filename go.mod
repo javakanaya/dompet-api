@@ -1,4 +1,4 @@
-module dompet-api
+module oprec
 
 go 1.20
 
