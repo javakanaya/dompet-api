@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	"oprec/dompet-api/dto"
-	"oprec/dompet-api/entity"
-	"oprec/dompet-api/repository"
-	"oprec/dompet-api/utils"
+	"dompet-api/dto"
+	"dompet-api/entity"
+	"dompet-api/repository"
+	"dompet-api/utils"
 
 	"github.com/mashingan/smapping"
 )
