@@ -90,3 +90,4 @@ func (j *jwtService) GetNameByToken(token string) (string, error) {
 	username := fmt.Sprintf("%v", claims["name"])
 	return username, nil
 }
+
