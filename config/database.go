@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"oprec/dompet-api/entity"
+	"dompet-api/entity"
 	"os"
 
 	"github.com/joho/godotenv"
