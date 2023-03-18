@@ -22,9 +22,11 @@ func main() {
 
 	db := config.SetupDatabaseConnection()
 
+	jwtService := service.NewJWTService()
+
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository)
-	userController := controller.NewUserController(userService)
+	userController := controller.NewUserController(userService, jwtService)
 
 	dompetRepository := repository.NewDompetRepository(db)
 	dompetService := service.NewDompetService(dompetRepository)
@@ -36,7 +38,7 @@ func main() {
 	server := gin.Default()
 	server.Use(middleware.CORSMiddleware())
 
-	routes.UserRoutes(server, userController, dompetController)
+	routes.UserRouter(server, userController, dompetController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
