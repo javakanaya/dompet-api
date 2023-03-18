@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"oprec/dompet-api/controller"
-	"oprec/dompet-api/middleware"
-	"oprec/dompet-api/service"
+	"dompet-api/controller"
+	"dompet-api/middleware"
+	"dompet-api/service"
 
 	"github.com/gin-gonic/gin"
 )
