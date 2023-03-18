@@ -8,17 +8,16 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/google/uuid"
 )
 
 type JWTService interface {
-	GenerateToken(UserID uuid.UUID) string
+	GenerateToken(UserID uint64) string
 	ValidateToken(token string) (*jwt.Token, error)
 	GetUserIDByToken(token string) (uint64, error)
 }
 
 type jwtCustomClaim struct {
-	UserID uuid.UUID `json:"user_id"`
+	UserID uint64 `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
@@ -42,7 +41,7 @@ func getSecretKey() string {
 	return secretKey
 }
 
-func (j *jwtService) GenerateToken(UserID uuid.UUID) string {
+func (j *jwtService) GenerateToken(UserID uint64) string {
 	claims := &jwtCustomClaim{
 		UserID,
 		jwt.RegisteredClaims{

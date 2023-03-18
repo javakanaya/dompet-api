@@ -3,15 +3,14 @@ package entity
 import (
 	"dompet-api/utils"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID       uuid.UUID `gorm:"primary_key;not_null" json:"id"`
-	Name     string    `json:"name"`
-	Email    string    `gorm:"unique" json:"email"`
-	Password string    `json:"password"`
+	ID       uint64 `gorm:"primary_key:auto_increment" json:"id"`
+	Name     string `json:"name"`
+	Email    string `gorm:"unique" json:"email"`
+	Password string `json:"password"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
