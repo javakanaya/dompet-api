@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"oprec/dompet-api/utils"
+	"dompet-api/utils"
 
 	"gorm.io/gorm"
 )
