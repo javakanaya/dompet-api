@@ -5,12 +5,13 @@ import (
 
 	"dompet-api/entity"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
 	InsertUser(ctx context.Context, user entity.User) (entity.User, error)
-	GetUserByID(ctx context.Context, userID uint64) (entity.User, error)
+	GetUserByID(ctx context.Context, userID uuid.UUID) (entity.User, error)
 	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
 }
 
@@ -31,7 +32,7 @@ func (db *userConnection) InsertUser(ctx context.Context, user entity.User) (ent
 	return user, nil
 }
 
-func (db *userConnection) GetUserByID(ctx context.Context, userID uint64) (entity.User, error) {
+func (db *userConnection) GetUserByID(ctx context.Context, userID uuid.UUID) (entity.User, error) {
 	var user entity.User
 	if err := db.connection.Where("id = ?", userID).Take(&user).Error; err != nil {
 		return entity.User{}, err

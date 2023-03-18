@@ -15,6 +15,7 @@ type UserService interface {
 	CreateUser(ctx context.Context, userDTO dto.UserCreateDTO) (entity.User, error)
 	IsDuplicateEmail(ctx context.Context, email string) (bool, error)
 	VerifyCredential(ctx context.Context, email string, password string) (bool, error)
+	GetUserByEmail(ctx context.Context, email string) (entity.User, error)
 }
 
 type userService struct {
@@ -63,4 +64,8 @@ func (us *userService) VerifyCredential(ctx context.Context, email string, passw
 		return true, nil
 	}
 	return false, nil
+}
+
+func (us *userService) GetUserByEmail(ctx context.Context, email string) (entity.User, error) {
+	return us.userRepository.GetUserByEmail(ctx, email)
 }

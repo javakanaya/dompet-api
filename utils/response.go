@@ -7,8 +7,6 @@ type Response struct {
 	Data    any    `json:"data"`
 }
 
-type EmptyObj struct{}
-
 func BuildResponse(message string, statusCode uint, data any) Response {
 	res := Response{
 		Success: true,
