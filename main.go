@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
 	"dompet-api/config"
 	"dompet-api/controller"
 	"dompet-api/middleware"
 	"dompet-api/repository"
 	"dompet-api/routes"
 	"dompet-api/service"
+	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +38,8 @@ func main() {
 	server := gin.Default()
 	server.Use(middleware.CORSMiddleware())
 
-	routes.UserRouter(server, userController, dompetController, jwtService)
+	routes.UserRouter(server, userController, jwtService)
+	routes.DompetRouter(server, dompetController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -46,4 +47,3 @@ func main() {
 	}
 	server.Run(":" + port)
 }
-
