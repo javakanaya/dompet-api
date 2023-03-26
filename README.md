@@ -1,4 +1,7 @@
 # dompet-api
-UPDATE:
-- Sejauh ini aku udah coba buat bikin routes url /me untuk mengembalikan id, nama, email, password(terenkripsi), dan juga list dompet yang dimiliki. Nah untuk entitasnya aku udah coba buat ada user, dompet, catatan_keuangan, sama detail_user_dompet (hasil tabel many-to-many dari relasi user ke dompet). 
+List Fitur Sejauh Ini:
+  - Register dan Login
+  - List Dompet User
+  - Lihat Detail Suatu Dompet
+  - Invite User lain ke dompet dengan Email mereka
 
