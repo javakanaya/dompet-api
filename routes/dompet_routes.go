@@ -12,5 +12,6 @@ func DompetRouter(router *gin.Engine, dompetController controller.DompetControll
 	dompetRoutes := router.Group("/secured").Use(middleware.Authenticate())
 	{
 		dompetRoutes.GET("/me", dompetController.LihatDompet)
+		dompetRoutes.POST("/dompet", dompetController.CreateDompet)
 	}
 }
