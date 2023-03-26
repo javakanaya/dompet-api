@@ -32,7 +32,6 @@ func main() {
 	dompetService := service.NewDompetService(dompetRepository)
 	dompetController := controller.NewDompetController(dompetService)
 
-	// mereka saling dependen
 	defer config.CloseDatabaseConnection(db)
 
 	server := gin.Default()
