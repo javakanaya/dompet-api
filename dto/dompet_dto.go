@@ -5,3 +5,9 @@ type DompetCreateDTO struct {
 	UserID     uint64 `json:"user_id"`
 	Saldo      uint64 `json:"saldo" binding:"required"`
 }
+
+type InviteUserRequest struct {
+	DompetID  uint64 `json:"dompet_id"`
+	EmailUser string `json:"user_email" binding:"required"`
+}
+
