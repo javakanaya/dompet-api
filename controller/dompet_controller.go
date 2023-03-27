@@ -17,7 +17,7 @@ type dompetController struct {
 
 type DompetController interface {
 	LihatDompet(ctx *gin.Context)
-	BuatDompet(ctx *gin.Context)
+	CreateDompet(ctx *gin.Context)
 	DetailDompet(ctx *gin.Context)
 	Invite(ctx *gin.Context)
 }
@@ -46,37 +46,36 @@ func (c *dompetController) LihatDompet(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (c *dompetController) BuatDompet(ctx *gin.Context) { // ini temporary, buat dompetnya masih pake punya aku jav
+func (c *dompetController) CreateDompet(ctx *gin.Context) {
 	token := ctx.GetHeader("Authorization")
-	token = strings.Replace(token, "Bearer ", "", -1) // menghilangkan kata bearer dari token, karena mau di proses
+	token = strings.Replace(token, "Bearer ", "", -1)
 	tokenService := service.NewJWTService()
 
-	id, _ := tokenService.GetUserIDByToken(token) // id sudah pasti ada jika berhasil melewati validate, jadi tidak mungkin error
-
-	var dompetDTO dto.DompetCreateRequest
-	errDTO := ctx.ShouldBind(&dompetDTO)
-	if errDTO != nil {
-		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
-		return
-	}
-
-	newDTO := dto.DompetCreateRequest{
-		NamaDompet: dompetDTO.NamaDompet,
-		Saldo:      dompetDTO.Saldo,
-		UserID:     id,
-	}
-
-	activeDompet, err := c.dompetService.CreateDompet(newDTO)
+	id, err := tokenService.GetUserIDByToken(token)
 	if err != nil {
-		response := utils.BuildErrorResponse("gagal membuat dompet", http.StatusBadRequest)
+		response := utils.BuildErrorResponse("Failed to get ID from token", http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response := utils.BuildResponse("dompet anda berhasil dibuat", http.StatusCreated, activeDompet)
-	ctx.JSON(http.StatusCreated, response)
+	var dompet dto.DompetCreateDTO
+	if tx := ctx.ShouldBind(&dompet); tx != nil {
+		res := utils.BuildErrorResponse("Failed to process request", http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 
+	dompet.UserID = id
+
+	result, err := c.dompetService.CreateDompet(ctx.Request.Context(), dompet)
+	if err != nil {
+		res := utils.BuildErrorResponse("Failed to create dompet", http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	res := utils.BuildResponse("Success to  create dompet", http.StatusOK, result)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (c *dompetController) DetailDompet(ctx *gin.Context) {
