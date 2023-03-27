@@ -12,7 +12,7 @@ func DompetRouter(router *gin.Engine, dompetController controller.DompetControll
 	dompetRoutes := router.Group("/secured").Use(middleware.Authenticate())
 	{
 		dompetRoutes.GET("/me", dompetController.LihatDompet)
-		dompetRoutes.POST("/create/dompet", dompetController.BuatDompet)
+		dompetRoutes.POST("/dompet", dompetController.CreateDompet)
 		dompetRoutes.GET("/dompet/:id", dompetController.DetailDompet)
 		dompetRoutes.PUT("/collab/:id", dompetController.Invite)
 	}
