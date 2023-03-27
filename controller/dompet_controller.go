@@ -20,6 +20,7 @@ type DompetController interface {
 	CreateDompet(ctx *gin.Context)
 	DetailDompet(ctx *gin.Context)
 	Invite(ctx *gin.Context)
+
 }
 
 func NewDompetController(dc service.DompetService) DompetController {
@@ -77,7 +78,6 @@ func (c *dompetController) CreateDompet(ctx *gin.Context) {
 	res := utils.BuildResponse("Success to  create dompet", http.StatusOK, result)
 	ctx.JSON(http.StatusOK, res)
 }
-
 func (c *dompetController) DetailDompet(ctx *gin.Context) {
 	idDompet, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {

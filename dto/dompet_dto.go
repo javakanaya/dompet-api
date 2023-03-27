@@ -10,3 +10,4 @@ type InviteUserRequest struct {
 	DompetID  uint64 `json:"dompet_id"`
 	EmailUser string `json:"user_email" binding:"required"`
 }
+

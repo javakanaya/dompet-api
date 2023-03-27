@@ -17,7 +17,7 @@ type DompetRepository interface {
 	GetMyDompet(tx *gorm.DB, id uint64) (entity.User, error)
 	InsertDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
 	GetDetailDompet(tx *gorm.DB, id uint64) (entity.Dompet, error)
-	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, error)
+	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, erro
 }
 
 func NewDompetRepository(db *gorm.DB) DompetRepository {
@@ -47,7 +47,6 @@ func (r *dompetRepository) InsertDompet(ctx context.Context, dompet entity.Dompe
 	if err := r.db.Create(&dompet).Error; err != nil {
 		return entity.Dompet{}, err
 	}
-
 	newDetail := entity.DetailUserDompet{
 		UserID:   dompet.UserID,
 		DompetID: dompet.ID,
@@ -107,3 +106,4 @@ func (r *dompetRepository) InviteToDompet(tx *gorm.DB, idDompet uint64, emailUse
 
 	return newUser, nil
 }
+
