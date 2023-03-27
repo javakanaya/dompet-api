@@ -1,9 +1,9 @@
 package dto
 
-type DompetCreateRequest struct {
+type DompetCreateDTO struct {
 	NamaDompet string `json:"nama_dompet" binding:"required"`
-	Saldo      uint64 `json:"saldo" binding:"required"`
 	UserID     uint64 `json:"user_id"`
+	Saldo      uint64 `json:"saldo" binding:"required"`
 }
 
 type InviteUserRequest struct {
