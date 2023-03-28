@@ -18,6 +18,7 @@ type DompetService interface {
 	CreateDompet(ctx context.Context, dompetDTO dto.DompetCreateDTO) (entity.Dompet, error)
 	GetDetailDompet(id uint64) (entity.Dompet, error)
 	InviteToDompet(inviteDTO dto.InviteUserRequest) (entity.User, error)
+	IsDompetOwnedByUserID(ctx context.Context, dompetID uint64, userID uint64) (bool, error)
 }
 
 func NewDompetService(dr repository.DompetRepository) DompetService {
@@ -59,4 +60,16 @@ func (s *dompetService) InviteToDompet(inviteDTO dto.InviteUserRequest) (entity.
 	}
 
 	return berhasilInvite, nil
+}
+
+// ini verifikasi nya
+func (s *dompetService) IsDompetOwnedByUserID(ctx context.Context, dompetID uint64, userID uint64) (bool, error) {
+	checkID, err := s.dompetRepo.GetUserIDFromDompet(ctx, dompetID)
+	if err != nil {
+		return false, err
+	}
+	if checkID == userID {
+		return true, nil
+	}
+	return false, nil
 }
