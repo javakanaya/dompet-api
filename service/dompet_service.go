@@ -16,8 +16,8 @@ type dompetService struct {
 type DompetService interface {
 	GetMyDompet(id uint64) (entity.User, error)
 	CreateDompet(ctx context.Context, dompetDTO dto.DompetCreateDTO) (entity.Dompet, error)
-	GetDetailDompet(id uint64) (entity.Dompet, error)
-	InviteToDompet(inviteDTO dto.InviteUserRequest) (entity.User, error)
+	GetDetailDompet(idDompet uint64, idUser uint64) (entity.Dompet, error)
+	InviteToDompet(inviteDTO dto.InviteUserRequest, idUser uint64) (entity.User, error)
 	IsDompetOwnedByUserID(ctx context.Context, dompetID uint64, userID uint64) (bool, error)
 	DeleteDompet(ctx context.Context, dompetID uint64) error
 }
@@ -45,8 +45,8 @@ func (s *dompetService) CreateDompet(ctx context.Context, dompetDTO dto.DompetCr
 	return s.dompetRepo.InsertDompet(ctx, dompet)
 }
 
-func (s *dompetService) GetDetailDompet(id uint64) (entity.Dompet, error) {
-	berhasilGet, err := s.dompetRepo.GetDetailDompet(nil, id)
+func (s *dompetService) GetDetailDompet(idDompet uint64, idUser uint64) (entity.Dompet, error) {
+	berhasilGet, err := s.dompetRepo.GetDetailDompet(nil, idDompet, idUser)
 	if err != nil {
 		return entity.Dompet{}, err
 	}
@@ -54,8 +54,8 @@ func (s *dompetService) GetDetailDompet(id uint64) (entity.Dompet, error) {
 	return berhasilGet, nil
 }
 
-func (s *dompetService) InviteToDompet(inviteDTO dto.InviteUserRequest) (entity.User, error) {
-	berhasilInvite, err := s.dompetRepo.InviteToDompet(nil, inviteDTO.DompetID, inviteDTO.EmailUser)
+func (s *dompetService) InviteToDompet(inviteDTO dto.InviteUserRequest, idUser uint64) (entity.User, error) {
+	berhasilInvite, err := s.dompetRepo.InviteToDompet(nil, inviteDTO.DompetID, inviteDTO.EmailUser, idUser)
 	if err != nil {
 		return entity.User{}, err
 	}
