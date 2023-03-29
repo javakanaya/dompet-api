@@ -17,7 +17,7 @@ type DompetRepository interface {
 	GetMyDompet(tx *gorm.DB, id uint64) (entity.User, error)
 	InsertDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
 	GetDetailDompet(tx *gorm.DB, idDompet uint64, idUser uint64) (entity.Dompet, error)
-	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, error)
+	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string, idUser uint64) (entity.User, error)
 	GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error)
 	DeleteDompet(ctx context.Context, dompetID uint64) error
 }
@@ -83,13 +83,17 @@ func (r *dompetRepository) GetDetailDompet(tx *gorm.DB, idDompet uint64, idUser 
 
 }
 
-func (r *dompetRepository) InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, error) {
+func (r *dompetRepository) InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string, idUser uint64) (entity.User, error) {
 	var dompet entity.Dompet
 	var newUser entity.User
 
 	checkDompet := r.db.Where("id = ?", idDompet).Take(&dompet) // cek dompet apakah ada
 	if checkDompet.Error != nil {
 		return entity.User{}, errors.New("dompet tidak tersedia")
+	}
+
+	if dompet.UserID != idUser {
+		return entity.User{}, errors.New("hanya owner yang bisa melakukan invitation")
 	}
 
 	checkUser := r.db.Where("email = ?", emailUser).Take(&newUser) // cek user dengan email tersebut apakah ada
