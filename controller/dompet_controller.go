@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"net/http"
 	"dompet-api/dto"
 	"dompet-api/service"
 	"dompet-api/utils"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -20,7 +20,7 @@ type DompetController interface {
 	CreateDompet(ctx *gin.Context)
 	DetailDompet(ctx *gin.Context)
 	Invite(ctx *gin.Context)
-
+	DeleteDompet(ctx *gin.Context)
 }
 
 func NewDompetController(dc service.DompetService) DompetController {
@@ -127,4 +127,46 @@ func (c *dompetController) Invite(ctx *gin.Context) {
 
 	response := utils.BuildResponse("berhasil melakukan penambahan partisipan", http.StatusOK, result)
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func (c *dompetController) DeleteDompet(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+	token = strings.Replace(token, "Bearer ", "", -1)
+	tokenService := service.NewJWTService()
+
+	userID, err := tokenService.GetUserIDByToken(token)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to get ID from token", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	dompetID, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		response := utils.BuildErrorResponse("Gagal memproses request", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	verify, err := c.dompetService.IsDompetOwnedByUserID(ctx, dompetID, userID)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify dompet ownership", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verify == true {
+		err = c.dompetService.DeleteDompet(ctx.Request.Context(), dompetID)
+		if err != nil {
+			response := utils.BuildErrorResponse("Failed to delete dompet", http.StatusBadRequest)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		response := utils.BuildResponse("Success to delete dompet", http.StatusOK, nil)
+		ctx.JSON(http.StatusCreated, response)
+		return
+	}
+
+	response := utils.BuildErrorResponse("Failed to delete: wrong dompet ownership", http.StatusBadRequest)
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 }

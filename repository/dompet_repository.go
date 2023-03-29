@@ -18,6 +18,8 @@ type DompetRepository interface {
 	InsertDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
 	GetDetailDompet(tx *gorm.DB, id uint64) (entity.Dompet, error)
 	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, error)
+	GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error)
+	DeleteDompet(ctx context.Context, dompetID uint64) error
 }
 
 func NewDompetRepository(db *gorm.DB) DompetRepository {
@@ -105,4 +107,26 @@ func (r *dompetRepository) InviteToDompet(tx *gorm.DB, idDompet uint64, emailUse
 	r.db.Model(&dompet).Association("ListUser").Append(&newUser)
 
 	return newUser, nil
+}
+
+// utk verifikasi, ngambil ID user dari dompet ID, utk nant di cocokin di service
+func (r *dompetRepository) GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error) {
+	var dompet entity.Dompet
+
+	if tx := r.db.Where("id = ?", dompetID).Take(&dompet).Error; tx != nil {
+		// ini return nya 0, kalo error, harus e gmn gtw..., berati userID ga boleh 0
+		return 0, tx
+	}
+	return dompet.UserID, nil
+}
+
+func (r *dompetRepository) DeleteDompet(ctx context.Context, dompetID uint64) error {
+	if tx := r.db.Delete(&entity.DetailUserDompet{}, "dompet_id = ?", &dompetID).Error; tx != nil {
+		return tx
+	}
+
+	if tx := r.db.Delete(&entity.Dompet{}, "id = ?", &dompetID).Error; tx != nil {
+		return tx
+	}
+	return nil
 }
