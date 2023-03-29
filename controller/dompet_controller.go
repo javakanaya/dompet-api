@@ -111,6 +111,18 @@ func (c *dompetController) DetailDompet(ctx *gin.Context) {
 }
 
 func (c *dompetController) Invite(ctx *gin.Context) {
+
+	token := ctx.GetHeader("Authorization")
+	token = strings.Replace(token, "Bearer ", "", -1)
+	tokenService := service.NewJWTService()
+
+	idUser, err := tokenService.GetUserIDByToken(token)
+	if err != nil {
+		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
 	idDompet, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
 	if err != nil {
 		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
@@ -131,7 +143,7 @@ func (c *dompetController) Invite(ctx *gin.Context) {
 		EmailUser: inviteDTO.EmailUser,
 	}
 
-	result, err := c.dompetService.InviteToDompet(newDTO)
+	result, err := c.dompetService.InviteToDompet(newDTO, idUser)
 	if err != nil {
 		response := utils.BuildErrorResponse(err.Error(), http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
