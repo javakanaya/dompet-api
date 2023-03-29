@@ -16,7 +16,7 @@ type DompetRepository interface {
 	// functional
 	GetMyDompet(tx *gorm.DB, id uint64) (entity.User, error)
 	InsertDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
-	GetDetailDompet(tx *gorm.DB, id uint64) (entity.Dompet, error)
+	GetDetailDompet(tx *gorm.DB, idDompet uint64, idUser uint64) (entity.Dompet, error)
 	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string) (entity.User, error)
 	GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error)
 	DeleteDompet(ctx context.Context, dompetID uint64) error
@@ -58,14 +58,21 @@ func (r *dompetRepository) InsertDompet(ctx context.Context, dompet entity.Dompe
 	return dompet, nil
 }
 
-func (r *dompetRepository) GetDetailDompet(tx *gorm.DB, id uint64) (entity.Dompet, error) {
+func (r *dompetRepository) GetDetailDompet(tx *gorm.DB, idDompet uint64, idUser uint64) (entity.Dompet, error) {
+	var detail entity.DetailUserDompet
+
+	checkDetail := r.db.Where("user_id = ? AND dompet_id = ?", idUser, idDompet).Take(&detail)
+	if checkDetail.Error != nil {
+		return entity.Dompet{}, errors.New("dompet tidak ditemukan")
+	}
+
 	var dompet entity.Dompet
 	var err error
 	if tx == nil {
-		tx = r.db.Where("id = ?", id).Preload("ListUser").Preload("ListCatatanKeuangan").Take(&dompet)
+		tx = r.db.Where("id = ?", idDompet).Preload("ListUser").Preload("ListCatatanKeuangan").Take(&dompet)
 		err = tx.Error
 	} else {
-		err = tx.Where("id = ?", id).Preload("ListUser").Preload("ListCatatanKeuangan").Take(&dompet).Error
+		err = tx.Where("id = ?", idDompet).Preload("ListUser").Preload("ListCatatanKeuangan").Take(&dompet).Error
 	}
 
 	if err != nil {
