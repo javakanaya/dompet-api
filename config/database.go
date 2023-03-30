@@ -1,8 +1,8 @@
 package config
 
 import (
-	"fmt"
 	"dompet-api/entity"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -36,6 +36,7 @@ func SetupDatabaseConnection() *gorm.DB {
 		entity.User{},
 		entity.Dompet{},
 		entity.CatatanKeuangan{},
+		entity.KategoriCatatanKeuangan{},
 	); err != nil {
 		fmt.Println(err)
 		panic(err)
