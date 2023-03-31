@@ -1,13 +1,13 @@
 package main
 
 import (
+	"log"
 	"dompet-api/config"
 	"dompet-api/controller"
 	"dompet-api/middleware"
 	"dompet-api/repository"
 	"dompet-api/routes"
 	"dompet-api/service"
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +32,10 @@ func main() {
 	dompetService := service.NewDompetService(dompetRepository)
 	dompetController := controller.NewDompetController(dompetService)
 
+	catatanRepository := repository.NewCatatanRepository(db)
+	catatanService := service.NewCatatanService(catatanRepository)
+	catatanController := controller.NewCatatanController(catatanService)
+
 	defer config.CloseDatabaseConnection(db)
 
 	server := gin.Default()
@@ -39,6 +43,7 @@ func main() {
 
 	routes.UserRouter(server, userController, jwtService)
 	routes.DompetRouter(server, dompetController, jwtService)
+	routes.CatatanRouter(server, catatanController, jwtService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
