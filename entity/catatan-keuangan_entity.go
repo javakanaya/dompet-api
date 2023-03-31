@@ -9,11 +9,10 @@ type CatatanKeuangan struct {
 	Pengeluaran uint64    `json:"pengeluaran" binding:"required"` // tuliskan nominal pengeluaran
 	Tanggal     time.Time `json:"tanggal" binding:"required"`
 
-	JenisID    uint64                  `gorm:"not null" json:"jenis_id"`
-	KategoriID uint64                  `gorm:"not null" json:"kategori_id"`
-	Kategori   KategoriCatatanKeuangan `gorm:"ForeignKey:JenisID,KategoriID;References:JenisID,ID" json:"kategori"`
+	Jenis    string `json:"jenis"`
+	Kategori string `json:"kategori"`
 
-	DompetID uint64  `gorm:"foreignKey" json:"user_id"`
+	DompetID uint64  `gorm:"foreignKey" json:"dompet_id"`
 	Dompet   *Dompet `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"user,omitempty"`
 }
 
