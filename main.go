@@ -34,7 +34,7 @@ func main() {
 
 	catatanRepository := repository.NewCatatanRepository(db)
 	catatanService := service.NewCatatanService(catatanRepository)
-	catatanController := controller.NewCatatanController(catatanService)
+	catatanController := controller.NewCatatanController(catatanService, dompetService)
 
 	defer config.CloseDatabaseConnection(db)
 

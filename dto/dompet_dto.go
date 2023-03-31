@@ -10,3 +10,8 @@ type InviteUserRequest struct {
 	DompetID  uint64 `json:"dompet_id"`
 	EmailUser string `json:"user_email" binding:"required"`
 }
+
+type DompetUpdateSaldoDTO struct {
+	NamaDompet string  `json:"nama_dompet" binding:"required"`
+	Saldo      *uint64 `json:"saldo" binding:"required"`
+}

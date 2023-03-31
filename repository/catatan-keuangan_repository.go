@@ -1,8 +1,10 @@
 package repository
 
 import (
-	"errors"
+	"context"
 	"dompet-api/entity"
+	"errors"
+
 	"time"
 
 	"gorm.io/gorm"
@@ -16,6 +18,7 @@ type CatatanRepository interface {
 	// functional
 	Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string, kategori string) (entity.CatatanKeuangan, error)
 	InsertKategori(kategori entity.KategoriCatatanKeuangan) (entity.KategoriCatatanKeuangan, error)
+	CreateCatatanKeuangan(ctx context.Context, catatanKeuangan entity.CatatanKeuangan) (entity.CatatanKeuangan, error)
 }
 
 func NewCatatanRepository(db *gorm.DB) CatatanRepository {
@@ -99,3 +102,12 @@ func (r *catatanRepository) InsertKategori(kategori entity.KategoriCatatanKeuang
 
 	return kategori, nil
 }
+
+func (r *catatanRepository) CreateCatatanKeuangan(ctx context.Context, catatanPemasukan entity.CatatanKeuangan) (entity.CatatanKeuangan, error) {
+	if tx := r.db.Create(&catatanPemasukan).Error; tx != nil {
+		return entity.CatatanKeuangan{}, tx
+	}
+
+	return catatanPemasukan, nil
+}
+
