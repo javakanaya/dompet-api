@@ -4,6 +4,7 @@ import (
 	"context"
 	"dompet-api/entity"
 	"errors"
+
 	"time"
 
 	"gorm.io/gorm"
@@ -109,3 +110,4 @@ func (r *catatanRepository) CreateCatatanKeuangan(ctx context.Context, catatanPe
 
 	return catatanPemasukan, nil
 }
+

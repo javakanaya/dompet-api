@@ -20,3 +20,10 @@ type TransferRequest struct {
 	Deskripsi  string `json:"deskripsi" binding:"required"`
 	Kategori   string `json:"kategori" binding:"required"`
 }
+
+type TransferRequest struct {
+	NamaDompet string `json:"nama_dompet" binding:"required"`
+	Nominal    uint64 `json:"nominal" binding:"required"`
+	Deskripsi  string `json:"deskripsi" binding:"required"`
+	Kategori   string `json:"kategori" binding:"required"`
+}

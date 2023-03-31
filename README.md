@@ -5,4 +5,6 @@ List Fitur Sejauh Ini:
   - List Dompet User
   - Lihat Detail Suatu Dompet
   - Invite User lain ke dompet dengan Email mereka
+  - Delete Dompet
+  - Transfer Antar Dompet
 

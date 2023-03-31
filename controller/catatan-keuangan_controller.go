@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"net/http"
 	"dompet-api/dto"
 	"dompet-api/entity"
 	"dompet-api/service"
 	"dompet-api/utils"
-	"net/http"
 	"strconv"
 	"strings"
 
@@ -28,7 +28,6 @@ func NewCatatanController(cs service.CatatanService, ds service.DompetService) C
 	return &catatanController{
 		catatanService: cs,
 		dompetService:  ds,
-	}
 }
 
 func (c *catatanController) Transfer(ctx *gin.Context) {
@@ -91,7 +90,6 @@ func (c *catatanController) InsertKategori(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 
 }
-
 func (c *catatanController) CreatePemasukan(ctx *gin.Context) {
 	token := ctx.GetHeader("Authorization")
 	token = strings.Replace(token, "Bearer ", "", -1)
@@ -202,3 +200,4 @@ func (c *catatanController) CreatePengeluaran(ctx *gin.Context) {
 	response := utils.BuildErrorResponse("Failed to create pengeluaran: wrong dompet ownership", http.StatusBadRequest)
 	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 }
+

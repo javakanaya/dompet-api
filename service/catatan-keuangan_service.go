@@ -66,3 +66,4 @@ func (s *catatanService) CreatePengeluaran(ctx context.Context, pengeluaranDTO d
 	catatanPengeluaran.Jenis = "Pengeluaran"
 	return s.catatanRepo.CreateCatatanKeuangan(ctx, catatanPengeluaran)
 }
+

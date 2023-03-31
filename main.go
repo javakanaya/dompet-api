@@ -1,13 +1,13 @@
 package main
 
 import (
+	"log"
 	"dompet-api/config"
 	"dompet-api/controller"
 	"dompet-api/middleware"
 	"dompet-api/repository"
 	"dompet-api/routes"
 	"dompet-api/service"
-	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
