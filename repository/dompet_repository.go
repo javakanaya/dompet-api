@@ -20,6 +20,7 @@ type DompetRepository interface {
 	InviteToDompet(tx *gorm.DB, idDompet uint64, emailUser string, idUser uint64) (entity.User, error)
 	GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error)
 	DeleteDompet(ctx context.Context, dompetID uint64) error
+	UpdateDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
 }
 
 func NewDompetRepository(db *gorm.DB) DompetRepository {
@@ -140,4 +141,11 @@ func (r *dompetRepository) DeleteDompet(ctx context.Context, dompetID uint64) er
 		return tx
 	}
 	return nil
+}
+
+func (r *dompetRepository) UpdateDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error) {
+	if tx := r.db.Save(&dompet).Error; tx != nil {
+		return entity.Dompet{}, tx
+	}
+	return dompet, nil
 }
