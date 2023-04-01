@@ -21,6 +21,7 @@ type DompetController interface {
 	DetailDompet(ctx *gin.Context)
 	Invite(ctx *gin.Context)
 	DeleteDompet(ctx *gin.Context)
+	UpdateNama(ctx *gin.Context)
 }
 
 func NewDompetController(dc service.DompetService) DompetController {
@@ -194,4 +195,45 @@ func (c *dompetController) DeleteDompet(ctx *gin.Context) {
 
 	response := utils.BuildErrorResponse("Failed to delete: wrong dompet ownership", http.StatusBadRequest)
 	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+}
+
+func (c *dompetController) UpdateNama(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+	token = strings.Replace(token, "Bearer ", "", -1)
+	tokenService := service.NewJWTService()
+
+	idUser, err := tokenService.GetUserIDByToken(token)
+	if err != nil {
+		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	idDompet, err := strconv.ParseUint(ctx.Param("id"), 10, 64)
+	if err != nil {
+		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	var updated dto.UpdateNamaDompet
+	errDTO := ctx.ShouldBind(&updated)
+	if errDTO != nil {
+		response := utils.BuildErrorResponse("gagal memproses request", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	updated.ID = idDompet
+
+	result, err := c.dompetService.UpdateNama(updated, idUser)
+	if err != nil {
+		response := utils.BuildErrorResponse(err.Error(), http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := utils.BuildResponse("berhasil mengganti nama: ", http.StatusOK, result)
+	ctx.JSON(http.StatusCreated, response)
+
 }
