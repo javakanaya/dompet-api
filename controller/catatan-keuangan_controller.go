@@ -605,7 +605,7 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 func (c *catatanController) Kategori(ctx *gin.Context) {
 	jenis := ctx.Param("jenis")
 
-	result, err := c.catatanService.GetKategori(jenis)
+	result, err := c.catatanService.GetListKategori(jenis)
 	if err != nil {
 		response := utils.BuildErrorResponse(err.Error(), http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)

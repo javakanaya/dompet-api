@@ -150,6 +150,7 @@ func (s *catatanService) UpdatePengeluaran(ctx context.Context, updatedPengeluar
 	catatanPengeluaran.Kategori = updatedPengeluaran.Kategori
 
 	return s.catatanRepo.UpdateCatatan(ctx, catatanPengeluaran)
+}
 
 func (s *catatanService) GetListKategori(jenis string) ([]dto.ReturnKategori, error) {
 	return s.catatanRepo.GetListKategori(jenis)

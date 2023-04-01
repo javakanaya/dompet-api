@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"dompet-api/entity"
 	"dompet-api/dto"
+	"dompet-api/entity"
 	"errors"
 
 	"time"
@@ -144,7 +144,7 @@ func (r *catatanRepository) GetKategori(ctx context.Context, KategoriCatatanKeua
 		return entity.KategoriCatatanKeuangan{}, tx
 	}
 	return kategori, nil
-
+}
 func (r *catatanRepository) GetListKategori(jenis string) ([]dto.ReturnKategori, error) {
 	var model entity.KategoriCatatanKeuangan
 	var ListKategori []dto.ReturnKategori

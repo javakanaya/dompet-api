@@ -95,7 +95,7 @@ func (s *dompetService) IsUserHasAccessToDompet(ctx context.Context, userID uint
 		return true, nil
 	}
 	return false, nil
-
+}
 func (s *dompetService) UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error) {
 	return s.dompetRepo.UpdateNama(updated, idUser)
 

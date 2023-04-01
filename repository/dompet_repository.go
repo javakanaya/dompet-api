@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"dompet-api/entity"
 	"dompet-api/dto"
+	"dompet-api/entity"
 	"errors"
 
 	"gorm.io/gorm"
@@ -153,7 +153,6 @@ func (r *dompetRepository) UpdateDompet(ctx context.Context, dompet entity.Dompe
 	return dompet, nil
 }
 
-
 func (r *dompetRepository) GetDetailDompetUser(ctx context.Context, userID uint64, dompetID uint64) (entity.DetailUserDompet, error) {
 	var detail entity.DetailUserDompet
 
@@ -162,6 +161,7 @@ func (r *dompetRepository) GetDetailDompetUser(ctx context.Context, userID uint6
 		return entity.DetailUserDompet{}, errors.New("dompet tidak ditemukan")
 	}
 	return detail, nil
+}
 func (r *dompetRepository) UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error) {
 	var detail entity.DetailUserDompet
 	var dompet entity.Dompet
