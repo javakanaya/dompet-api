@@ -88,3 +88,7 @@ func (s *catatanService) IsCatatanExistInDompet(ctx context.Context, catatanKeua
 func (s *catatanService) GetCatatanByID(ctx context.Context, catatanKeuanganId uint64) (entity.CatatanKeuangan, error) {
 	return s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganId)
 }
+
+func (s *catatanService) GetKategori(jenis string) ([]dto.ReturnKategori, error) {
+	return s.catatanRepo.GetKategori(jenis)
+}
