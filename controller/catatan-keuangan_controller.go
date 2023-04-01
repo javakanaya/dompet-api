@@ -120,6 +120,12 @@ func (c *catatanController) CreatePemasukan(ctx *gin.Context) {
 
 	if verify == true {
 		dompetUpdated, err := c.dompetService.GetDetailDompet(pemasukanDTO.DompetID, userID)
+		if err != nil {
+			response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+
 		pemasukan, err := c.catatanService.CreatePemasukan(ctx.Request.Context(), pemasukanDTO)
 		if err != nil {
 			response := utils.BuildErrorResponse("Failed to create pemasukan", http.StatusBadRequest)
@@ -208,6 +214,7 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 	token = strings.Replace(token, "Bearer ", "", -1)
 	tokenService := service.NewJWTService()
 
+	// get user ID
 	userID, err := tokenService.GetUserIDByToken(token)
 	if err != nil {
 		response := utils.BuildErrorResponse("Failed to get ID from token", http.StatusBadRequest)
@@ -215,6 +222,7 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 		return
 	}
 
+	// dapetin ID catatan dan Dompet ID yang mau dihapus
 	var catatanDTO dto.DeleteCatatanDTO
 	if tx := ctx.ShouldBind(&catatanDTO); tx != nil {
 		res := utils.BuildErrorResponse("Failed to process request", http.StatusBadRequest)
@@ -222,6 +230,7 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 		return
 	}
 
+	// verivfy dompet user
 	verifyDompetUser, err := c.dompetService.IsDompetOwnedByUserID(ctx.Request.Context(), catatanDTO.DompetID, userID)
 	if err != nil {
 		response := utils.BuildErrorResponse("Failed to verify dompet ownership", http.StatusBadRequest)
@@ -230,6 +239,7 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 	}
 
 	if verifyDompetUser == true {
+		// verify dompet catatan
 		verifyDompetCatatan, err := c.catatanService.IsCatatanExistInDompet(ctx.Request.Context(), catatanDTO.ID, catatanDTO.DompetID)
 		if err != nil {
 			response := utils.BuildErrorResponse("Failed to verify dompet-catatan relationship", http.StatusBadRequest)
@@ -237,16 +247,34 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 			return
 		}
 		if verifyDompetCatatan == true {
-			err := c.catatanService.DeleteCatatanKeuangan(ctx.Request.Context(), catatanDTO.ID)
+
+			dompetUpdated, err := c.dompetService.GetDetailDompet(catatanDTO.DompetID, userID)
 			if err != nil {
-				response := utils.BuildErrorResponse("Failed to delete catatan keuangan", http.StatusBadRequest)
+				response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
 				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 				return
 			}
-			// ini belum kelar
-			//_, err := c.dompetService.GetDetailDompet(catatanDTO.DompetID, userID)
+
+			catatanDetail, err := c.catatanService.GetCatatanByID(ctx.Request.Context(), catatanDTO.ID)
 			if err != nil {
-				response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
+				response := utils.BuildErrorResponse("Failed to get catatan detail for update saldo", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+
+			dompetUpdated.Saldo += catatanDetail.Pengeluaran
+			dompetUpdated.Saldo -= catatanDetail.Pemasukan
+
+			_, err = c.dompetService.UpdateDompet(ctx.Request.Context(), dompetUpdated)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to update saldo", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+
+			err = c.catatanService.DeleteCatatanKeuangan(ctx.Request.Context(), catatanDTO.ID)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to delete catatan keuangan", http.StatusBadRequest)
 				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 				return
 			}
