@@ -114,6 +114,18 @@ func (c *catatanController) CreatePemasukan(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
+	verifyKategori, err := c.catatanService.IsKategoriExists(ctx.Request.Context(), pemasukanDTO.Kategori)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify kategori", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyKategori != true {
+		response := utils.BuildErrorResponse("Failed to create pemasukan: kategori not exists", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
 
 	// verif dompet user owner
 	verifyDompetUserOwnership, err := c.dompetService.IsDompetOwnedByUserID(ctx.Request.Context(), pemasukanDTO.DompetID, userID)
@@ -185,6 +197,19 @@ func (c *catatanController) CreatePengeluaran(ctx *gin.Context) {
 	if tx := ctx.ShouldBind(&pengeluaranDTO); tx != nil {
 		res := utils.BuildErrorResponse("Failed to process request", http.StatusBadRequest)
 		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	verifyKategori, err := c.catatanService.IsKategoriExists(ctx.Request.Context(), pengeluaranDTO.Kategori)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify kategori", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyKategori != true {
+		response := utils.BuildErrorResponse("Failed to create pengeluaran: kategori not exists", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
 
@@ -360,6 +385,19 @@ func (c *catatanController) UpdatePemasukan(ctx *gin.Context) {
 		return
 	}
 
+	verifyKategori, err := c.catatanService.IsKategoriExists(ctx.Request.Context(), pemasukanDTO.Kategori)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify kategori", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyKategori != true {
+		response := utils.BuildErrorResponse("Failed to update pemasukan: kategori not exists", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
 	// verivfy dompet user
 	verifyDompetUserOwnership, err := c.dompetService.IsDompetOwnedByUserID(ctx.Request.Context(), pemasukanDTO.DompetID, userID)
 	if err != nil {
@@ -427,7 +465,7 @@ func (c *catatanController) UpdatePemasukan(ctx *gin.Context) {
 	dompetDetail.Saldo -= oldCatatanDetail.Pemasukan
 	dompetDetail.Saldo += pemasukanDTO.Pemasukan
 
-	_, err = c.catatanService.UpdatePemasukan(ctx.Request.Context(), pemasukanDTO)
+	newPemasukan, err := c.catatanService.UpdatePemasukan(ctx.Request.Context(), pemasukanDTO)
 	if err != nil {
 		response := utils.BuildErrorResponse("Failed to update pemasukan on catatan keuangan", http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
@@ -440,6 +478,8 @@ func (c *catatanController) UpdatePemasukan(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
+	response := utils.BuildResponse("Success to update pemasukan", http.StatusOK, newPemasukan)
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
@@ -460,6 +500,19 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 	if tx := ctx.ShouldBind(&pengeluaranDTO); tx != nil {
 		res := utils.BuildErrorResponse("Failed to process request", http.StatusBadRequest)
 		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	verifyKategori, err := c.catatanService.IsKategoriExists(ctx.Request.Context(), pengeluaranDTO.Kategori)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify kategori", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyKategori != true {
+		response := utils.BuildErrorResponse("Failed to update pengeluaran: kategori not exists", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
 
@@ -530,7 +583,7 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 	dompetDetail.Saldo += oldCatatanDetail.Pengeluaran
 	dompetDetail.Saldo -= pengeluaranDTO.Pengeluaran
 
-	_, err = c.catatanService.UpdatePengeluaran(ctx.Request.Context(), pengeluaranDTO)
+	newPengeluaran, err := c.catatanService.UpdatePengeluaran(ctx.Request.Context(), pengeluaranDTO)
 	if err != nil {
 		response := utils.BuildErrorResponse("Failed to update pengeluaran on catatan keuangan", http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
@@ -543,4 +596,7 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}
+
+	response := utils.BuildResponse("Success to update pengeluaran", http.StatusOK, newPengeluaran)
+	ctx.JSON(http.StatusCreated, response)
 }
