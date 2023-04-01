@@ -19,6 +19,22 @@ type DeleteCatatanDTO struct {
 	ID       uint64 `json:"id" binding:"required"`
 }
 
+type UpdatePemasukanDTO struct {
+	DompetID  uint64 `json:"dompet_id" binding:"required"`
+	ID        uint64 `json:"id" binding:"required"`
+	Deskripsi string `json:"deskripsi"`
+	Pemasukan uint64 `json:"pemasukan"`
+	Kategori  string `json:"kategori"`
+}
+
+type UpdatePengeluaranDTO struct {
+	DompetID    uint64 `json:"dompet_id" binding:"required"`
+	ID          uint64 `json:"id" binding:"required"`
+	Deskripsi   string `json:"deskripsi"`
+	Pengeluaran uint64 `json:"pengeluaran"`
+	Kategori    string `json:"kategori"`
+}
+
 type TransferRequest struct {
 	NamaDompet string `json:"nama_dompet" binding:"required"`
 	Nominal    uint64 `json:"nominal" binding:"required"`
