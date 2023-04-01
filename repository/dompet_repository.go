@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"dompet-api/entity"
+	"dompet-api/dto"
 	"errors"
 
 	"gorm.io/gorm"
@@ -147,5 +148,24 @@ func (r *dompetRepository) UpdateDompet(ctx context.Context, dompet entity.Dompe
 	if tx := r.db.Save(&dompet).Error; tx != nil {
 		return entity.Dompet{}, tx
 	}
+	return dompet, nil
+}
+
+func (r *dompetRepository) UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error) {
+	var detail entity.DetailUserDompet
+	var dompet entity.Dompet
+
+	checkDetail := r.db.Where("user_id = ? AND dompet_id = ?", idUser, updated.ID).Take(&detail)
+	if checkDetail.Error != nil {
+		return entity.Dompet{}, errors.New("dompet tidak ditemukan")
+	}
+
+	if tx := r.db.Model(&dompet).Where(&entity.Dompet{ID: updated.ID}).Update("nama_dompet", updated.NamaDompet).Error; tx != nil {
+		return entity.Dompet{}, tx
+	}
+
+	updatedDompet := r.db.Where("id = ?", updated.ID).Take(&dompet)
+	_ = updatedDompet
+
 	return dompet, nil
 }
