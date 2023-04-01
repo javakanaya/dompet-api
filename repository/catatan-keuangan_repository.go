@@ -19,6 +19,8 @@ type CatatanRepository interface {
 	Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string, kategori string) (entity.CatatanKeuangan, error)
 	InsertKategori(kategori entity.KategoriCatatanKeuangan) (entity.KategoriCatatanKeuangan, error)
 	CreateCatatanKeuangan(ctx context.Context, catatanKeuangan entity.CatatanKeuangan) (entity.CatatanKeuangan, error)
+	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
+	GetCatatanByID(ctx context.Context, catatanKeuanganID uint64) (entity.CatatanKeuangan, error)
 }
 
 func NewCatatanRepository(db *gorm.DB) CatatanRepository {
@@ -111,3 +113,16 @@ func (r *catatanRepository) CreateCatatanKeuangan(ctx context.Context, catatanPe
 	return catatanPemasukan, nil
 }
 
+func (r *catatanRepository) DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error {
+	if tx := r.db.Delete(&entity.CatatanKeuangan{}, "id = ?", &catatanKeuanganID).Error; tx != nil {
+		return tx
+	}
+	return nil
+}
+func (r *catatanRepository) GetCatatanByID(ctx context.Context, catatanKeuanganID uint64) (entity.CatatanKeuangan, error) {
+	var catatanKeuangan entity.CatatanKeuangan
+	if tx := r.db.Where("id = ?", catatanKeuanganID).Take(&catatanKeuangan).Error; tx != nil {
+		return entity.CatatanKeuangan{}, tx
+	}
+	return catatanKeuangan, nil
+}

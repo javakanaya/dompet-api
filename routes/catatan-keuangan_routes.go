@@ -14,6 +14,7 @@ func CatatanRouter(router *gin.Engine, catatanController controller.CatatanContr
 		catatanRoutes.POST("/transfer/:id", catatanController.Transfer)
 		catatanRoutes.POST("/pemasukan", catatanController.CreatePemasukan)
 		catatanRoutes.POST("/pengeluaran", catatanController.CreatePengeluaran)
+		catatanRoutes.DELETE("/catatan", catatanController.DeleteCatatan)
 	}
 
 	adminRoutes := router.Group("/admin")

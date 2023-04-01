@@ -22,6 +22,7 @@ type CatatanController interface {
 	InsertKategori(ctx *gin.Context)
 	CreatePemasukan(ctx *gin.Context)
 	CreatePengeluaran(ctx *gin.Context)
+	DeleteCatatan(ctx *gin.Context)
 }
 
 func NewCatatanController(cs service.CatatanService, ds service.DompetService) CatatanController {
@@ -119,6 +120,12 @@ func (c *catatanController) CreatePemasukan(ctx *gin.Context) {
 
 	if verify == true {
 		dompetUpdated, err := c.dompetService.GetDetailDompet(pemasukanDTO.DompetID, userID)
+		if err != nil {
+			response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+
 		pemasukan, err := c.catatanService.CreatePemasukan(ctx.Request.Context(), pemasukanDTO)
 		if err != nil {
 			response := utils.BuildErrorResponse("Failed to create pemasukan", http.StatusBadRequest)
@@ -199,5 +206,86 @@ func (c *catatanController) CreatePengeluaran(ctx *gin.Context) {
 	}
 
 	response := utils.BuildErrorResponse("Failed to create pengeluaran: wrong dompet ownership", http.StatusBadRequest)
+	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+}
+
+func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
+	token := ctx.GetHeader("Authorization")
+	token = strings.Replace(token, "Bearer ", "", -1)
+	tokenService := service.NewJWTService()
+
+	// get user ID
+	userID, err := tokenService.GetUserIDByToken(token)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to get ID from token", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	// dapetin ID catatan dan Dompet ID yang mau dihapus
+	var catatanDTO dto.DeleteCatatanDTO
+	if tx := ctx.ShouldBind(&catatanDTO); tx != nil {
+		res := utils.BuildErrorResponse("Failed to process request", http.StatusBadRequest)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	// verivfy dompet user
+	verifyDompetUser, err := c.dompetService.IsDompetOwnedByUserID(ctx.Request.Context(), catatanDTO.DompetID, userID)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify dompet ownership", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyDompetUser == true {
+		// verify dompet catatan
+		verifyDompetCatatan, err := c.catatanService.IsCatatanExistInDompet(ctx.Request.Context(), catatanDTO.ID, catatanDTO.DompetID)
+		if err != nil {
+			response := utils.BuildErrorResponse("Failed to verify dompet-catatan relationship", http.StatusBadRequest)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+			return
+		}
+		if verifyDompetCatatan == true {
+
+			dompetUpdated, err := c.dompetService.GetDetailDompet(catatanDTO.DompetID, userID)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+
+			catatanDetail, err := c.catatanService.GetCatatanByID(ctx.Request.Context(), catatanDTO.ID)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to get catatan detail for update saldo", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+
+			dompetUpdated.Saldo += catatanDetail.Pengeluaran
+			dompetUpdated.Saldo -= catatanDetail.Pemasukan
+
+			_, err = c.dompetService.UpdateDompet(ctx.Request.Context(), dompetUpdated)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to update saldo", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+
+			err = c.catatanService.DeleteCatatanKeuangan(ctx.Request.Context(), catatanDTO.ID)
+			if err != nil {
+				response := utils.BuildErrorResponse("Failed to delete catatan keuangan", http.StatusBadRequest)
+				ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+				return
+			}
+			response := utils.BuildResponse("Success to delete catatan keuangan", http.StatusOK, nil)
+			ctx.JSON(http.StatusCreated, response)
+			return
+		}
+		response := utils.BuildErrorResponse("Failed to delete catatan keuangan: catatan not exist in dompet", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+	response := utils.BuildErrorResponse("Failed to delete catatan keuangan: wrong dompet ownership", http.StatusBadRequest)
 	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 }

@@ -14,6 +14,11 @@ type CreatePengeluaranDTO struct {
 	DompetID    uint64 `json:"dompet_id" binding:"required"`
 }
 
+type DeleteCatatanDTO struct {
+	DompetID uint64 `json:"dompet_id" binding:"required"`
+	ID       uint64 `json:"id" binding:"required"`
+}
+
 type TransferRequest struct {
 	NamaDompet string `json:"nama_dompet" binding:"required"`
 	Nominal    uint64 `json:"nominal" binding:"required"`
