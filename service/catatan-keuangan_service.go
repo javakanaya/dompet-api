@@ -22,6 +22,7 @@ type CatatanService interface {
 	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
 	IsCatatanExistInDompet(ctx context.Context, catatanKeuanganID uint64, dompetID uint64) (bool, error)
 	GetCatatanByID(ctx context.Context, catatanKeuanganId uint64) (entity.CatatanKeuangan, error)
+	GetKategori(jenis string) ([]dto.ReturnKategori, error)
 }
 
 func NewCatatanService(cr repository.CatatanRepository) CatatanService {
