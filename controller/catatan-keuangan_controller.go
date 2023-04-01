@@ -23,6 +23,7 @@ type CatatanController interface {
 	CreatePemasukan(ctx *gin.Context)
 	CreatePengeluaran(ctx *gin.Context)
 	DeleteCatatan(ctx *gin.Context)
+	Kategori(ctx *gin.Context)
 }
 
 func NewCatatanController(cs service.CatatanService, ds service.DompetService) CatatanController {
@@ -288,4 +289,18 @@ func (c *catatanController) DeleteCatatan(ctx *gin.Context) {
 	}
 	response := utils.BuildErrorResponse("Failed to delete catatan keuangan: wrong dompet ownership", http.StatusBadRequest)
 	ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+}
+
+func (c *catatanController) Kategori(ctx *gin.Context) {
+	jenis := ctx.Param("jenis")
+
+	result, err := c.catatanService.GetKategori(jenis)
+	if err != nil {
+		response := utils.BuildErrorResponse(err.Error(), http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := utils.BuildResponse("List Kategori: ", http.StatusOK, result)
+	ctx.JSON(http.StatusCreated, response)
 }

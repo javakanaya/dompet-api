@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"dompet-api/entity"
+	"dompet-api/dto"
 	"errors"
 
 	"time"
@@ -21,6 +22,7 @@ type CatatanRepository interface {
 	CreateCatatanKeuangan(ctx context.Context, catatanKeuangan entity.CatatanKeuangan) (entity.CatatanKeuangan, error)
 	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
 	GetCatatanByID(ctx context.Context, catatanKeuanganID uint64) (entity.CatatanKeuangan, error)
+	GetKategori(jenis string) ([]dto.ReturnKategori, error)
 }
 
 func NewCatatanRepository(db *gorm.DB) CatatanRepository {
@@ -125,4 +127,23 @@ func (r *catatanRepository) GetCatatanByID(ctx context.Context, catatanKeuanganI
 		return entity.CatatanKeuangan{}, tx
 	}
 	return catatanKeuangan, nil
+}
+
+func (r *catatanRepository) GetKategori(jenis string) ([]dto.ReturnKategori, error) {
+	var model entity.KategoriCatatanKeuangan
+	var ListKategori []dto.ReturnKategori
+	var getKategori *gorm.DB
+
+	if jenis == "pemasukan" {
+		getKategori = r.db.Debug().Model(&model).Where("jenis_id = 1").Find(&ListKategori)
+	} else if jenis == "pengeluaran" {
+		getKategori = r.db.Debug().Model(&model).Where("jenis_id = 2").Find(&ListKategori)
+	} else {
+		return []dto.ReturnKategori{}, errors.New("invalid jenis kategori")
+	}
+
+	if getKategori.Error != nil {
+		return []dto.ReturnKategori{}, getKategori.Error
+	}
+	return ListKategori, nil
 }
