@@ -22,7 +22,12 @@ type CatatanService interface {
 	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
 	IsCatatanExistInDompet(ctx context.Context, catatanKeuanganID uint64, dompetID uint64) (bool, error)
 	GetCatatanByID(ctx context.Context, catatanKeuanganId uint64) (entity.CatatanKeuangan, error)
-	GetKategori(jenis string) ([]dto.ReturnKategori, error)
+	UpdatePemasukan(ctx context.Context, updatedPemasukan dto.UpdatePemasukanDTO) (entity.CatatanKeuangan, error)
+	UpdatePengeluaran(ctx context.Context, updatedPengeluaran dto.UpdatePengeluaranDTO) (entity.CatatanKeuangan, error)
+	IsCatatanPemasukan(ctx context.Context, catatanKeuanganID uint64) (bool, error)
+	IsCatatanPengeluaran(ctx context.Context, catatanKeuanganID uint64) (bool, error)
+	IsKategoriExists(ctx context.Context, kategori string) (bool, error)
+	GetListKategori(jenis string) ([]dto.ReturnKategori, error)
 }
 
 func NewCatatanService(cr repository.CatatanRepository) CatatanService {
@@ -86,10 +91,67 @@ func (s *catatanService) IsCatatanExistInDompet(ctx context.Context, catatanKeua
 	return false, nil
 }
 
+func (s *catatanService) IsCatatanPengeluaran(ctx context.Context, catatanKeuanganID uint64) (bool, error) {
+	catatan, err := s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganID)
+	if err != nil {
+		return false, err
+	}
+	if catatan.Jenis == "Pengeluaran" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *catatanService) IsCatatanPemasukan(ctx context.Context, catatanKeuanganID uint64) (bool, error) {
+	catatan, err := s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganID)
+	if err != nil {
+		return false, err
+	}
+	if catatan.Jenis == "Pemasukan" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *catatanService) IsKategoriExists(ctx context.Context, kategori string) (bool, error) {
+	cekKategori, err := s.catatanRepo.GetKategori(ctx, kategori)
+	if err != nil {
+		return false, err
+	}
+	if cekKategori.NamaKategori == kategori {
+		return true, nil
+	}
+	return false, nil
+}
+
 func (s *catatanService) GetCatatanByID(ctx context.Context, catatanKeuanganId uint64) (entity.CatatanKeuangan, error) {
 	return s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganId)
 }
 
-func (s *catatanService) GetKategori(jenis string) ([]dto.ReturnKategori, error) {
-	return s.catatanRepo.GetKategori(jenis)
+func (s *catatanService) UpdatePemasukan(ctx context.Context, updatedPemasukan dto.UpdatePemasukanDTO) (entity.CatatanKeuangan, error) {
+	catatanPemasukan, err := s.catatanRepo.GetCatatanByID(ctx, updatedPemasukan.ID)
+	if err != nil {
+		return entity.CatatanKeuangan{}, err
+	}
+	catatanPemasukan.Deskripsi = updatedPemasukan.Deskripsi
+	catatanPemasukan.Pemasukan = updatedPemasukan.Pemasukan
+	catatanPemasukan.Kategori = updatedPemasukan.Kategori
+
+	return s.catatanRepo.UpdateCatatan(ctx, catatanPemasukan)
+}
+
+func (s *catatanService) UpdatePengeluaran(ctx context.Context, updatedPengeluaran dto.UpdatePengeluaranDTO) (entity.CatatanKeuangan, error) {
+	catatanPengeluaran, err := s.catatanRepo.GetCatatanByID(ctx, updatedPengeluaran.ID)
+	if err != nil {
+		return entity.CatatanKeuangan{}, err
+	}
+	catatanPengeluaran.Deskripsi = updatedPengeluaran.Deskripsi
+	catatanPengeluaran.Pengeluaran = updatedPengeluaran.Pengeluaran
+	catatanPengeluaran.Kategori = updatedPengeluaran.Kategori
+
+	return s.catatanRepo.UpdateCatatan(ctx, catatanPengeluaran)
+
+func (s *catatanService) GetListKategori(jenis string) ([]dto.ReturnKategori, error) {
+	return s.catatanRepo.GetListKategori(jenis)
+
 }
