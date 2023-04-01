@@ -22,6 +22,7 @@ type CatatanRepository interface {
 	CreateCatatanKeuangan(ctx context.Context, catatanKeuangan entity.CatatanKeuangan) (entity.CatatanKeuangan, error)
 	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
 	GetCatatanByID(ctx context.Context, catatanKeuanganID uint64) (entity.CatatanKeuangan, error)
+	GetKategori(jenis string) ([]dto.ReturnKategori, error)
 }
 
 func NewCatatanRepository(db *gorm.DB) CatatanRepository {
