@@ -22,6 +22,7 @@ type DompetService interface {
 	DeleteDompet(ctx context.Context, dompetID uint64) error
 	UpdateDompet(ctx context.Context, dompetUpdated entity.Dompet) (entity.Dompet, error)
 	IsUserHasAccessToDompet(ctx context.Context, userID uint64, dompetID uint64) (bool, error)
+	UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error)
 }
 
 func NewDompetService(dr repository.DompetRepository) DompetService {
@@ -94,4 +95,8 @@ func (s *dompetService) IsUserHasAccessToDompet(ctx context.Context, userID uint
 		return true, nil
 	}
 	return false, nil
+
+func (s *dompetService) UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error) {
+	return s.dompetRepo.UpdateNama(updated, idUser)
+
 }

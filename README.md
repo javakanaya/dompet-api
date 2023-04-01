@@ -8,3 +8,5 @@ List Fitur Sejauh Ini:
   - Delete Dompet
   - Transfer Antar Dompet
   - Pemasukan/Pengeluaran
+  - Get Kategori
+  - Update Nama Dompet

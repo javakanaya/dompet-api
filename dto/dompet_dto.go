@@ -15,3 +15,9 @@ type DompetUpdateSaldoDTO struct {
 	NamaDompet string  `json:"nama_dompet" binding:"required"`
 	Saldo      *uint64 `json:"saldo" binding:"required"`
 }
+
+type UpdateNamaDompet struct {
+	ID         uint64 `json:"id"`
+	NamaDompet string `json:"nama_dompet" binding:"required"`
+}
+

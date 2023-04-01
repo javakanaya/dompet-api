@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"dompet-api/entity"
+	"dompet-api/dto"
 	"errors"
 
 	"gorm.io/gorm"
@@ -22,6 +23,7 @@ type DompetRepository interface {
 	DeleteDompet(ctx context.Context, dompetID uint64) error
 	UpdateDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
 	GetDetailDompetUser(ctx context.Context, userID uint64, dompetID uint64) (entity.DetailUserDompet, error)
+	UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error)
 }
 
 func NewDompetRepository(db *gorm.DB) DompetRepository {
@@ -151,6 +153,7 @@ func (r *dompetRepository) UpdateDompet(ctx context.Context, dompet entity.Dompe
 	return dompet, nil
 }
 
+
 func (r *dompetRepository) GetDetailDompetUser(ctx context.Context, userID uint64, dompetID uint64) (entity.DetailUserDompet, error) {
 	var detail entity.DetailUserDompet
 
@@ -159,4 +162,21 @@ func (r *dompetRepository) GetDetailDompetUser(ctx context.Context, userID uint6
 		return entity.DetailUserDompet{}, errors.New("dompet tidak ditemukan")
 	}
 	return detail, nil
+func (r *dompetRepository) UpdateNama(updated dto.UpdateNamaDompet, idUser uint64) (entity.Dompet, error) {
+	var detail entity.DetailUserDompet
+	var dompet entity.Dompet
+
+	checkDetail := r.db.Where("user_id = ? AND dompet_id = ?", idUser, updated.ID).Take(&detail)
+	if checkDetail.Error != nil {
+		return entity.Dompet{}, errors.New("dompet tidak ditemukan")
+	}
+
+	if tx := r.db.Model(&dompet).Where(&entity.Dompet{ID: updated.ID}).Update("nama_dompet", updated.NamaDompet).Error; tx != nil {
+		return entity.Dompet{}, tx
+	}
+
+	updatedDompet := r.db.Where("id = ?", updated.ID).Take(&dompet)
+	_ = updatedDompet
+
+	return dompet, nil
 }

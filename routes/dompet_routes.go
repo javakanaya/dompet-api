@@ -16,5 +16,6 @@ func DompetRouter(router *gin.Engine, dompetController controller.DompetControll
 		dompetRoutes.GET("/dompet/:id", dompetController.DetailDompet)
 		dompetRoutes.DELETE("/dompet/:id", dompetController.DeleteDompet)
 		dompetRoutes.PUT("/collab/:id", dompetController.Invite)
+		dompetRoutes.PUT("/update/:id", dompetController.UpdateNama)
 	}
 }

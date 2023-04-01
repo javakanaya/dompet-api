@@ -41,3 +41,7 @@ type TransferRequest struct {
 	Deskripsi  string `json:"deskripsi" binding:"required"`
 	Kategori   string `json:"kategori" binding:"required"`
 }
+
+type ReturnKategori struct {
+	NamaKategori string `json:"nama_kategori"`
+}

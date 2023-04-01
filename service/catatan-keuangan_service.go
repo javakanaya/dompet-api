@@ -27,6 +27,7 @@ type CatatanService interface {
 	IsCatatanPemasukan(ctx context.Context, catatanKeuanganID uint64) (bool, error)
 	IsCatatanPengeluaran(ctx context.Context, catatanKeuanganID uint64) (bool, error)
 	IsKategoriExists(ctx context.Context, kategori string) (bool, error)
+	GetListKategori(jenis string) ([]dto.ReturnKategori, error)
 }
 
 func NewCatatanService(cr repository.CatatanRepository) CatatanService {
@@ -149,4 +150,8 @@ func (s *catatanService) UpdatePengeluaran(ctx context.Context, updatedPengeluar
 	catatanPengeluaran.Kategori = updatedPengeluaran.Kategori
 
 	return s.catatanRepo.UpdateCatatan(ctx, catatanPengeluaran)
+
+func (s *catatanService) GetListKategori(jenis string) ([]dto.ReturnKategori, error) {
+	return s.catatanRepo.GetListKategori(jenis)
+
 }

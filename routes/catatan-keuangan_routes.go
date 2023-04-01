@@ -18,7 +18,12 @@ func CatatanRouter(router *gin.Engine, catatanController controller.CatatanContr
 		catatanRoutes.PUT("/pemasukan", catatanController.UpdatePemasukan)
 		catatanRoutes.PUT("/pengeluaran", catatanController.UpdatePengeluaran)
 	}
-
+	
+	publicRoutes := router.Group("")
+	{
+		publicRoutes.GET("/kategori/:jenis", catatanController.Kategori)
+	}
+	
 	adminRoutes := router.Group("/admin")
 	{
 		adminRoutes.POST("/kategori", catatanController.InsertKategori)

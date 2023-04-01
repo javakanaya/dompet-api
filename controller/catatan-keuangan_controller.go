@@ -25,6 +25,7 @@ type CatatanController interface {
 	DeleteCatatan(ctx *gin.Context)
 	UpdatePemasukan(ctx *gin.Context)
 	UpdatePengeluaran(ctx *gin.Context)
+	Kategori(ctx *gin.Context)
 }
 
 func NewCatatanController(cs service.CatatanService, ds service.DompetService) CatatanController {
@@ -598,5 +599,19 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 	}
 
 	response := utils.BuildResponse("Success to update pengeluaran", http.StatusOK, newPengeluaran)
+	ctx.JSON(http.StatusCreated, response)
+}
+
+func (c *catatanController) Kategori(ctx *gin.Context) {
+	jenis := ctx.Param("jenis")
+
+	result, err := c.catatanService.GetKategori(jenis)
+	if err != nil {
+		response := utils.BuildErrorResponse(err.Error(), http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := utils.BuildResponse("List Kategori: ", http.StatusOK, result)
 	ctx.JSON(http.StatusCreated, response)
 }
