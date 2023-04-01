@@ -21,6 +21,7 @@ type DompetRepository interface {
 	GetUserIDFromDompet(ctx context.Context, dompetID uint64) (uint64, error)
 	DeleteDompet(ctx context.Context, dompetID uint64) error
 	UpdateDompet(ctx context.Context, dompet entity.Dompet) (entity.Dompet, error)
+	GetDetailDompetUser(ctx context.Context, userID uint64, dompetID uint64) (entity.DetailUserDompet, error)
 }
 
 func NewDompetRepository(db *gorm.DB) DompetRepository {
@@ -148,4 +149,14 @@ func (r *dompetRepository) UpdateDompet(ctx context.Context, dompet entity.Dompe
 		return entity.Dompet{}, tx
 	}
 	return dompet, nil
+}
+
+func (r *dompetRepository) GetDetailDompetUser(ctx context.Context, userID uint64, dompetID uint64) (entity.DetailUserDompet, error) {
+	var detail entity.DetailUserDompet
+
+	checkDetail := r.db.Where("user_id = ? AND dompet_id = ?", userID, dompetID).Take(&detail)
+	if checkDetail.Error != nil {
+		return entity.DetailUserDompet{}, errors.New("dompet tidak ditemukan")
+	}
+	return detail, nil
 }
