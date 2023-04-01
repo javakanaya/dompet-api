@@ -396,6 +396,19 @@ func (c *catatanController) UpdatePemasukan(ctx *gin.Context) {
 		return
 	}
 
+	verifyCatatanPemasukan, err := c.catatanService.IsCatatanPemasukan(ctx.Request.Context(), pemasukanDTO.ID)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify jenis catatan", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyCatatanPemasukan != true {
+		response := utils.BuildErrorResponse("Failed to update pengeluaran: catatan is not pemasukan", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
 	dompetDetail, err := c.dompetService.GetDetailDompet(pemasukanDTO.DompetID, userID)
 	if err != nil {
 		response := utils.BuildErrorResponse("Failed to get dompet for update saldo", http.StatusBadRequest)
@@ -482,6 +495,19 @@ func (c *catatanController) UpdatePengeluaran(ctx *gin.Context) {
 
 	if verifyDompetCatatan != true {
 		response := utils.BuildErrorResponse("Failed to update pengeluaran: catatan not exist in dompet", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	verifyCatatanPengeluaran, err := c.catatanService.IsCatatanPengeluaran(ctx.Request.Context(), pengeluaranDTO.ID)
+	if err != nil {
+		response := utils.BuildErrorResponse("Failed to verify jenis catatan", http.StatusBadRequest)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
+		return
+	}
+
+	if verifyCatatanPengeluaran != true {
+		response := utils.BuildErrorResponse("Failed to update pengeluaran: catatan is not pengeluaran", http.StatusBadRequest)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, response)
 		return
 	}

@@ -24,6 +24,8 @@ type CatatanService interface {
 	GetCatatanByID(ctx context.Context, catatanKeuanganId uint64) (entity.CatatanKeuangan, error)
 	UpdatePemasukan(ctx context.Context, updatedPemasukan dto.UpdatePemasukanDTO) (entity.CatatanKeuangan, error)
 	UpdatePengeluaran(ctx context.Context, updatedPengeluaran dto.UpdatePengeluaranDTO) (entity.CatatanKeuangan, error)
+	IsCatatanPemasukan(ctx context.Context, catatanKeuanganID uint64) (bool, error)
+	IsCatatanPengeluaran(ctx context.Context, catatanKeuanganID uint64) (bool, error)
 }
 
 func NewCatatanService(cr repository.CatatanRepository) CatatanService {
@@ -82,6 +84,28 @@ func (s *catatanService) IsCatatanExistInDompet(ctx context.Context, catatanKeua
 		return false, err
 	}
 	if catatan.DompetID == dompetID {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *catatanService) IsCatatanPengeluaran(ctx context.Context, catatanKeuanganID uint64) (bool, error) {
+	catatan, err := s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganID)
+	if err != nil {
+		return false, err
+	}
+	if catatan.Jenis == "Pengeluaran" {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (s *catatanService) IsCatatanPemasukan(ctx context.Context, catatanKeuanganID uint64) (bool, error) {
+	catatan, err := s.catatanRepo.GetCatatanByID(ctx, catatanKeuanganID)
+	if err != nil {
+		return false, err
+	}
+	if catatan.Jenis == "Pemasukan" {
 		return true, nil
 	}
 	return false, nil
