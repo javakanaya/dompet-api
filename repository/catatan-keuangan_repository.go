@@ -17,7 +17,7 @@ type catatanRepository struct {
 
 type CatatanRepository interface {
 	// functional
-	Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string, kategori string) (entity.CatatanKeuangan, error)
+	Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string) (entity.CatatanKeuangan, error)
 	InsertKategori(kategori entity.KategoriCatatanKeuangan) (entity.KategoriCatatanKeuangan, error)
 	CreateCatatanKeuangan(ctx context.Context, catatanKeuangan entity.CatatanKeuangan) (entity.CatatanKeuangan, error)
 	DeleteCatatanKeuangan(ctx context.Context, catatanKeuanganID uint64) error
@@ -33,7 +33,7 @@ func NewCatatanRepository(db *gorm.DB) CatatanRepository {
 	}
 }
 
-func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string, kategori string) (entity.CatatanKeuangan, error) {
+func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string) (entity.CatatanKeuangan, error) {
 	var dompetSumber entity.Dompet
 	var dompetTujuan entity.Dompet
 	var kategoriTransfer entity.KategoriCatatanKeuangan
@@ -52,11 +52,6 @@ func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64
 		return entity.CatatanKeuangan{}, errors.New("dompet tujuan tidak ditemukan")
 	}
 
-	getKategori := r.db.Where("nama_kategori = ?", kategori).Take(&kategoriTransfer)
-	if getKategori.Error != nil {
-		return entity.CatatanKeuangan{}, errors.New("kategori tidak ditemukan")
-	}
-
 	// update saldo sumber
 	r.db.Debug().Model(&dompetSumber).Where(entity.Dompet{ID: dompetSumber.ID}).Update("saldo", (dompetSumber.Saldo - nominal))
 
@@ -67,8 +62,8 @@ func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64
 		Pengeluaran: nominal,
 		Tanggal:     time.Now(),
 
-		Jenis:    "Transfer",
-		Kategori: kategoriTransfer.NamaKategori,
+		Jenis:    "Pengeluaran",
+		Kategori: "Transfer",
 
 		DompetID: dompetSumber.ID,
 	}
@@ -83,13 +78,13 @@ func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64
 	// buat catatan di tujuan
 	sumber := dompetSumber.NamaDompet
 	newCatatanTujuan := entity.CatatanKeuangan{
-		Deskripsi:   deskripsi,
+		Deskripsi:   "Menerima transfer dari dompet: " + sumber,
 		Pemasukan:   nominal,
 		Pengeluaran: 0,
 		Tanggal:     time.Now(),
 
 		Jenis:    "Pemasukan",
-		Kategori: "Menerima transfer dari dompet: " + sumber,
+		Kategori: "Transfer",
 
 		DompetID: dompetTujuan.ID,
 	}
