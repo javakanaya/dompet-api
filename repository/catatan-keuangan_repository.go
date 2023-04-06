@@ -36,7 +36,6 @@ func NewCatatanRepository(db *gorm.DB) CatatanRepository {
 func (r *catatanRepository) Transfer(tx *gorm.DB, idUser uint64, idSumber uint64, tujuan string, nominal uint64, deskripsi string) (entity.CatatanKeuangan, error) {
 	var dompetSumber entity.Dompet
 	var dompetTujuan entity.Dompet
-	var kategoriTransfer entity.KategoriCatatanKeuangan
 
 	getSumber := r.db.Where("user_id = ? AND id = ?", idUser, idSumber).Take(&dompetSumber)
 	if getSumber.Error != nil {
