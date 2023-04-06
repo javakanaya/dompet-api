@@ -37,7 +37,7 @@ func NewCatatanService(cr repository.CatatanRepository) CatatanService {
 }
 
 func (s *catatanService) Transfer(transferDTO dto.TransferRequest, idUser uint64, idSumber uint64) (entity.CatatanKeuangan, error) {
-	berhasilTransfer, err := s.catatanRepo.Transfer(nil, idUser, idSumber, transferDTO.NamaDompet, transferDTO.Nominal, transferDTO.Deskripsi, transferDTO.Kategori)
+	berhasilTransfer, err := s.catatanRepo.Transfer(nil, idUser, idSumber, transferDTO.NamaDompet, transferDTO.Nominal, transferDTO.Deskripsi)
 	if err != nil {
 		return entity.CatatanKeuangan{}, err
 	}
